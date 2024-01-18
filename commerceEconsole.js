@@ -1,93 +1,70 @@
+const { clear } = require('console');
+const { read } = require('fs');
+
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
 // Product data (using a concise array of objects)
-const products = [
+const items = [
   { id: 1, name: "T-shirt", price: 15, quantity: 10 },
   { id: 2, name: "Mug", price: 10, quantity: 5 },
   { id: 3, name: "Book", price: 25, quantity: 3 }
 ];
 
-// Cart array (initialized as empty)
 let cart = [];
 
-// Function to display products in a user-friendly format
-function displayProducts() {
-    console.clear();
-    console.log("Available Products:");
-    products.forEach(product => {
-        console.log(`${product.id}. ${product.name} - $${product.price}`);
-    });
-}
+//display products
+function displayItems(){
+  console.clear();
+  console.log("Available Items: ");
+  //work for each product user selected to display name and id
+  items.forEach(item => {
+    console.log(`${item.id}. ${item.name} - ${item.price}`);
+  })
 
-// Function to add a product to the cart with error handling
-function addToCart(productId) {
-    const product = products.find(product => product.id === productId);
-    if (product && product.quantity > 0) {
-        cart.push(product);
-        product.quantity--;
-        console.log(`${product.name} added to cart`);
-    } else {
-        console.log("Product not found or out of stock");
-    }
-}
+  //add a choosen item to cart
+  function addToCart(){
+    readline.question("Enter item ID: ", (itemIdString) =>{
+      const itemId = parseInt(itemIdString);
+      const item = items.find(item => item.id === itemId);
+    })
 
-// Function to display the cart contents
-function viewCart() {
-    console.clear();
-    console.log("Your Cart:");
-    if (cart.length === 0) {
-        console.log("Your cart is empty");
-    } else {
-        cart.forEach(product => {
-            console.log(`${product.name} - $${product.price}`);
+    if (item && item.quantity > 0){
+      const quantity = parseInt(readline.question("Enter quantity: "));
+      if (quantity > item.quantity){
+        console.log("Not enough stock available")
+      }else{
+        cart.push({
+          items,
+          quantity
         });
+        item.quantity -= quantity;
+        console.log(`${Product.name} added to cart`);
+      }
+    }else{
+      console.log("Product not found or out of stock");
     }
+  }};
 
-// Function to handle checkout with a clear message
-function checkout() {
-    console.clear();
-    console.log("Checkout Successful!")
-    console.log("Thank you for your purchase!");
-    cart = []; // Clear the cart
-}
-
-// Main loop for user interaction, tailored for Node.js environment
-const readline = require('readline').createInterface({
-    input: process.stdin, 
-    output: process.stdout
-});
-readline.question("Enter your name: ", (name) => {
-  // Process the name here
-});
-
-while (true) {
-    displayProducts();
-    readline.question('"Enter your name: ", (cart) => {const choice = parseInt(choiceString);
-        
-        switch (choice) {
-            case 1:
-                displayProducts();
-                break;
-            
-            case 2:
-                readline.question("Enter product ID: ", (productIdString) => {
-                    const productId = parseInt(productIdString);
-                    addToCart(productId);
-                });
-                break;
-            
-            case 3:
-                viewCart();
-                break;
-            
-            case 4:
-                checkout();
-                break;
-            
-            case 5:
-                console.log("Exiting...");
-                process.exit();
-                break;
-            default:
-                console.log("Invalid choice");
+//fucntion to view cart
+function viewCart(){
+  console.clear();
+  console.log("Your cart:");
+  //notify user if cart is empty
+  if (cart.legnth === 0){
+    console.log("Cart is empty");
+  } else{ //check for total initial total price to zer
+    let totalPrice = 0;
+    //calculate each item in the cart
+    cart.forEach(item =>{
+      console.log(`${item.name} - ${item.quantity} x ${item.price} 
+      = ${item.quantity} * ${item.price}`);
+      totalPrice += item.quantity * item.price;
+    });
+    console.log(`Total price: $$(totalPrince)`);
     }
-  });
-}}
+  }
+
+  //function to view 
