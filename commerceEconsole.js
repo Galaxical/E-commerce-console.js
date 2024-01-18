@@ -16,7 +16,7 @@ const items = [
 let cart = [];
 
 //display products
-function displayItems(){
+function displayItems(cart){
   console.clear();
   console.log("Available Items: ");
   //work for each product user selected to display name and id
@@ -67,4 +67,41 @@ function viewCart(){
     }
   }
 
-  //function to view 
+  //function to checkout cart
+  function checkout(){
+    console.clear();
+    console.log("Checkout successful..");
+    console.log("Thank you for your purchase");
+    cart = [] //clear cart
+  }
+
+  //creating the user interaction loops
+
+  while (true){
+    displayItems();
+
+    readline.question("Enter your choice (1-4 or 5 to exit): ", (choiceString) => {
+      const choice = parseInt(choiceString);
+
+      switch(choice){
+        case 1:
+          displayItems();
+          break;
+        case 2:
+          addToCart();
+          break;
+        case 3:
+          viewCart();
+          break;
+        case 4:
+          checkout();
+          break;
+        case 5:
+          console.log("Exiting...");
+          break;
+        default:
+          console.log("Invalid choice");
+    
+      }
+    });
+  }
