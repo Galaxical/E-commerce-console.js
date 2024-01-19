@@ -1,47 +1,77 @@
-//set up product cart: id, name, price, quantity
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-const products = [
-    {id: 1, name: "T-shirt", price: 25, quantity: 5},
-    {id: 2, name: "airJordan", price: 150, quantity: 2},
-    {id: 3, name: "sweadPants", price: 65, quantity: 3},
-    {id: 4, name: "baseBall Cap", price: 5, quantity: 2}
+const availableItems = [
+  { id: 1, name: "Product A", price: 20 },
+  { id: 2, name: "Product B", price: 30 },
+  { id: 3, name: "Product C", price: 25 }
 ];
 
-//Add functions for core functionality
-//firstly to display products
+let cart = [];
 
-function displayProduct(){
-    console.table(products);
+function displayAvailableItems() {
+  return new Promise(resolve => {
+    console.log("Available Products:");
+    availableItems.forEach(product => {
+      console.log(`${product.id}. ${product.name} - $${product.price}`);
+    });
+    resolve();
+  });
 }
 
-//Next, add products to cart or choose desired products
+function getUserInput() {
+  return new Promise((resolve, reject) => {
+    const id = parseInt(prompt("Enter the product ID:"));
+    const quantity = parseInt(prompt("Enter the quantity:"));
 
-function addToCart(){
-    const product = product.find(product => product.id === productID);
-    if(product && product.quantity > 0){
-        //Add to cart using seperate array log
-        cart.push(product);
-        product.quantity--;
-        console.log(`${product.name} added to the cart`);
-    } else{
-        console.log("Product not found")
+    if (!Number.isInteger(id) || !Number.isInteger(quantity)) {
+      reject("Invalid input. Please enter valid numbers.");
+    } else {
+      resolve({ id, quantity });
     }
+  });
 }
 
-//Let user view cart
+function addToCart(selectedProduct, quantity) {
+  return new Promise((resolve, reject) => {
+    const itemInCart = cart.find(item => item.id === selectedProduct.id);
 
-function viewCart(){
-    console.table(cart);
+    if (itemInCart) {
+      itemInCart.quantity += quantity;
+    } else {
+      cart.push({ ...selectedProduct, quantity });
+    }
+
+    console.log("Item added to cart.");
+    resolve();
+  });
 }
 
-//check out
-
-function checkout(){
-    //calculate total price
-
-    const totalPrice = cart.reduce((sum, product) => sum + product.price, 0);
-    console.log("Total price: ", totalPrice);
-    //payment processing
-    console.log("payment successful");
-    cart = []; //to clear the cart
+function calculateTotalPrice(item) {
+  return item.price * item.quantity;
 }
+
+async function checkout() {
+  try {
+    await displayAvailableItems();
+    const { id, quantity } = await getUserInput();
+
+    const selectedProduct = availableItems.find(product => product.id === id);
+
+    if (selectedProduct) {
+      await addToCart(selectedProduct, quantity);
+
+      const totalPrice = calculateTotalPrice(cart[cart.length - 1]);
+      console.log(`Total Price: $${totalPrice}`);
+      console.log("Thank you for shopping!");
+    } else {
+      console.log("Invalid product ID. Please try again.");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+checkout();
