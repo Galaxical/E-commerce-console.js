@@ -1,93 +1,77 @@
-// Product data (using a concise array of objects)
-const products = [
-  { id: 1, name: "T-shirt", price: 15, quantity: 10 },
-  { id: 2, name: "Mug", price: 10, quantity: 5 },
-  { id: 3, name: "Book", price: 25, quantity: 3 }
+const readline = require('readline');
+
+const availableItems = [
+  { id: 1, name: "Product A", price: 20 },
+  { id: 2, name: "Product B", price: 30 },
+  { id: 3, name: "Product C", price: 25 }
 ];
 
-// Cart array (initialized as empty)
 let cart = [];
 
-// Function to display products in a user-friendly format
-function displayProducts() {
-    console.clear();
+function displayAvailableItems() {
+  return new Promise(resolve => {
     console.log("Available Products:");
-    products.forEach(product => {
-        console.log(`${product.id}. ${product.name} - $${product.price}`);
+    availableItems.forEach(product => {
+      console.log(`${product.id}. ${product.name} - $${product.price}`);
     });
-}
-
-// Function to add a product to the cart with error handling
-function addToCart(productId) {
-    const product = products.find(product => product.id === productId);
-    if (product && product.quantity > 0) {
-        cart.push(product);
-        product.quantity--;
-        console.log(`${product.name} added to cart`);
-    } else {
-        console.log("Product not found or out of stock");
-    }
-}
-
-// Function to display the cart contents
-function viewCart() {
-    console.clear();
-    console.log("Your Cart:");
-    if (cart.length === 0) {
-        console.log("Your cart is empty");
-    } else {
-        cart.forEach(product => {
-            console.log(`${product.name} - $${product.price}`);
-        });
-    }
-
-// Function to handle checkout with a clear message
-function checkout() {
-    console.clear();
-    console.log("Checkout Successful!")
-    console.log("Thank you for your purchase!");
-    cart = []; // Clear the cart
-}
-
-// Main loop for user interaction, tailored for Node.js environment
-const readline = require('readline').createInterface({
-    input: process.stdin, 
-    output: process.stdout
-});
-readline.question("Enter your name: ", (name) => {
-  // Process the name here
-});
-
-while (true) {
-    displayProducts();
-    readline.question('"Enter your name: ", (cart) => {const choice = parseInt(choiceString);
-        
-        switch (choice) {
-            case 1:
-                displayProducts();
-                break;
-            
-            case 2:
-                readline.question("Enter product ID: ", (productIdString) => {
-                    const productId = parseInt(productIdString);
-                    addToCart(productId);
-                });
-                break;
-            
-            case 3:
-                viewCart();
-                break;
-            
-            case 4:
-                checkout();
-                break;
-            
-            case 5:
-                console.log("Exiting...");
-                process.exit();
-                break;
-            default:
-                console.log("Invalid choice");
-    }
+    resolve();
   });
-}}
+}
+
+function getUserInput() {
+  return new Promise(resolve => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    rl.question('Enter the product ID: ', id => {
+      rl.question('Enter the quantity: ', quantity => {
+        rl.close();
+        resolve({ id: parseInt(id), quantity: parseInt(quantity) });
+      });
+    });
+  });
+}
+
+function addToCart(selectedProduct, quantity) {
+  return new Promise(resolve => {
+    const itemInCart = cart.find(item => item.id === selectedProduct.id);
+
+    if (itemInCart) {
+      itemInCart.quantity += quantity;
+    } else {
+      cart.push({ ...selectedProduct, quantity });
+    }
+
+    console.log("Item added to cart.");
+    resolve();
+  });
+}
+
+function calculateTotalPrice(item) {
+  return item.price * item.quantity;
+}
+
+async function checkout() {
+  try {
+    await displayAvailableItems();
+    const { id, quantity } = await getUserInput();
+
+    const selectedProduct = availableItems.find(product => product.id === id);
+
+    if (selectedProduct) {
+      await addToCart(selectedProduct, quantity);
+
+      const totalPrice = calculateTotalPrice(cart[cart.length - 1]);
+      console.log(`Total Price: $${totalPrice}`);
+      console.log("Thank you for shopping!");
+    } else {
+      console.log("Invalid product ID. Please try again.");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+checkout();
