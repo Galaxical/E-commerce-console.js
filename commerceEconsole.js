@@ -1,9 +1,9 @@
 const readline = require('readline');
 
 const availableItems = [
-  { id: 1, name: "Product A", price: 20 },
-  { id: 2, name: "Product B", price: 30 },
-  { id: 3, name: "Product C", price: 25 }
+  { id: 1, name: "T-shirt", price: 15, quantity: 10 },
+  { id: 2, name: "Mug", price: 10, quantity: 5 },
+  { id: 3, name: "Book", price: 25, quantity: 3 }
 ];
 
 let cart = [];
@@ -54,6 +54,7 @@ function calculateTotalPrice(item) {
 }
 
 async function checkout() {
+  //use try...catch error for error handling
   try {
     await displayAvailableItems();
     const { id, quantity } = await getUserInput();
@@ -62,8 +63,8 @@ async function checkout() {
 
     if (selectedProduct) {
       await addToCart(selectedProduct, quantity);
-
-      const totalPrice = calculateTotalPrice(cart[cart.length - 1]);
+      //create an array of totalPrice as last index and access it 
+      const totalPrice = calculateTotalPrice(cart.at(-1)); //same as cart.[cart.length] -1
       console.log(`Total Price: $${totalPrice}`);
       console.log("Thank you for shopping!");
     } else {
