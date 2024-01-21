@@ -2,8 +2,11 @@ const readline = require('readline');
 
 const availableItems = [
   { id: 1, name: "T-shirt", price: 15, quantity: 10 },
-  { id: 2, name: "Mug", price: 10, quantity: 5 },
-  { id: 3, name: "Book", price: 25, quantity: 3 }
+  { id: 2, name: "Mug", price: 10, quantity: 8 },
+  { id: 3, name: "Book", price: 25, quantity: 25 },
+  {id:  4, name: "airJordan", price: 150, quantity: 3},
+  {id: 5, name: "swedPants", price: 65, quantity: 12},
+  {id: 6, name: "baseBall Cap", price: 5, quantity: 5}
 ];
 
 let cart = [];
